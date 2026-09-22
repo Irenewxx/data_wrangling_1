@@ -4,17 +4,19 @@ output: github_document
 ---
 
 
-This file is for data import
+This file is for data import,每次commit和push之前，都要knit檢查！
 
 ```{r}
 library(tidyverse)
 
 ```
 
-Import our first dataset
+Import our first dataset（這裡顯示的也不一樣？）
 ```{r}
 litters_df=
-  read_csv(file="data/FAS_litters.csv")
+  read_csv(file="data/FAS_litters.csv",
+    na=c("","NA",".")
+  )
 head(litters_df)
 #永遠記得print或者head都是（你最開始的data命名）
 
@@ -23,10 +25,12 @@ litters_df=janitor::clean_names(litters_df)
 ```
 
 
-Import your second dataset
+Import your second dataset(這裡好像也顯示的不太一樣？viewr的地方跑不出來？)
 ```{r}
 pups_df=
-  read_csv("data/FAS_pups.csv", skip=3)
+  read_csv("data/FAS_pups.csv", skip=3,
+     na=c("","NA",".")
+    )
 
 pups_df=janitor::clean_names(pups_df)
 
@@ -59,4 +63,6 @@ Viewing?
 view(pups_df)
 ```
 
+
+## Oh excel...
 
