@@ -3,7 +3,6 @@ title: "Data Import"
 output: github_document
 ---
 
-I'm an R Markdown document! 
 
 This file is for data import
 
@@ -11,4 +10,53 @@ This file is for data import
 library(tidyverse)
 
 ```
+
+Import our first dataset
+```{r}
+litters_df=
+  read_csv(file="data/FAS_litters.csv")
+head(litters_df)
+#永遠記得print或者head都是（你最開始的data命名）
+
+litters_df=janitor::clean_names(litters_df)
+
+```
+
+
+Import your second dataset
+```{r}
+pups_df=
+  read_csv("data/FAS_pups.csv", skip=3)
+
+pups_df=janitor::clean_names(pups_df)
+
+```
+
+
+##Look at thedata
+```{r}
+litters_df
+pups_df
+
+```
+Head or tail
+使用head和tail可以只看表格前面跟後面的幾筆資料
+```{r}
+head(litters_df,20)
+
+tail(pups_df,5)
+```
+
+Skimming?(好像console的地方看不到variable type？) 目的是用來簡單查看一下data
+```{r}
+skimr::skim(pups_df)
+```
+
+
+Viewing?
+在console使用view，可以看data，你也可以在markdown的地方使用，這樣可以保存你用過的script
+```{r}
+view(pups_df)
+```
+
 
