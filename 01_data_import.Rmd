@@ -110,4 +110,13 @@ pulse_df
 
 ```
 
+## What's so bad about 'read.csv()'
+import pups with 'read.csv()'
+```{r}
+pups_df_base=
+  read.csv("data/FAS_pups.csv")
+pups_df_base
+```
+won't show:lazy about variable names;super slow for big dataset.
+直接只用read.csv，你會看到“一大堆”的資料，很煩的！不要這麼做，資料一大會很阿雜
 
