@@ -21,7 +21,7 @@ litters_df=
   read_csv(file="data/FAS_litters.csv",
     na=c("","NA",".")
   )
-head(litters_df)
+litters_df
 #永遠記得print或者head都是（你最開始的data命名）
 
 litters_df=janitor::clean_names(litters_df)
