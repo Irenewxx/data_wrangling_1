@@ -5,9 +5,11 @@ output: github_document
 
 
 This file is for data import,每次commit和push之前，都要knit檢查！
+readxl package 可用來讀excel
 
 ```{r}
 library(tidyverse)
+library(readxl)
 
 ```
 
@@ -25,12 +27,13 @@ litters_df=janitor::clean_names(litters_df)
 ```
 
 
-Import your second dataset(這裡好像也顯示的不太一樣？viewr的地方跑不出來？)
+Import your second dataset(每次都要在最後在加上你的data名字，才可以顯示)
 ```{r}
 pups_df=
   read_csv("data/FAS_pups.csv", skip=3,
      na=c("","NA",".")
     )
+pups_df
 
 pups_df=janitor::clean_names(pups_df)
 
@@ -65,4 +68,32 @@ view(pups_df)
 
 
 ## Oh excel...
+Jenny made'readxl'to solve our problems.
+```{r}
+mlb_df=read_excel("data/mlb11.xlsx")
+```
+
+Look at the data
+```{r}
+mlb_df
+```
+
+
+Load some LotR data.
+Import FOTR words.
+```{r}
+fotr_df=
+  read_excel("data/LotR_Words.xlsx",
+    range="B3:D6")
+fotr_df
+
+```
+
+What about two towers
+```{r}
+tt_df=read_excel("data/LotR_Words.xlsx",
+    range="F3:H6")
+tt_df
+```
+
 

@@ -1,7 +1,8 @@
 Data Import
 ================
 
-This file is for data import,每次commit和push之前，都要knit檢查！
+This file is for data import,每次commit和push之前，都要knit檢查！ readxl
+package 可用來讀excel
 
 ``` r
 library(tidyverse)
@@ -17,6 +18,10 @@ library(tidyverse)
     ## ✖ dplyr::filter() masks stats::filter()
     ## ✖ dplyr::lag()    masks stats::lag()
     ## ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
+
+``` r
+library(readxl)
+```
 
 Import our first dataset（這裡顯示的也不一樣？）
 
@@ -58,8 +63,7 @@ head(litters_df)
 litters_df=janitor::clean_names(litters_df)
 ```
 
-Import your second
-dataset(這裡好像也顯示的不太一樣？viewr的地方跑不出來？)
+Import your second dataset(每次都要在最後在加上你的data名字，才可以顯示)
 
 ``` r
 pups_df=
@@ -76,6 +80,25 @@ pups_df=
     ## 
     ## ℹ Use `spec()` to retrieve the full column specification for this data.
     ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+
+``` r
+pups_df
+```
+
+    ## # A tibble: 313 × 6
+    ##    `Litter Number`   Sex `PD ears` `PD eyes` `PD pivot` `PD walk`
+    ##    <chr>           <dbl>     <dbl>     <dbl>      <dbl>     <dbl>
+    ##  1 #85                 1         4        13          7        11
+    ##  2 #85                 1         4        13          7        12
+    ##  3 #1/2/95/2           1         5        13          7         9
+    ##  4 #1/2/95/2           1         5        13          8        10
+    ##  5 #5/5/3/83/3-3       1         5        13          8        10
+    ##  6 #5/5/3/83/3-3       1         5        14          6         9
+    ##  7 #5/4/2/95/2         1        NA        14          5         9
+    ##  8 #4/2/95/3-3         1         4        13          6         8
+    ##  9 #4/2/95/3-3         1         4        13          7         9
+    ## 10 #2/2/95/3-2         1         4        NA          8        10
+    ## # ℹ 303 more rows
 
 ``` r
 pups_df=janitor::clean_names(pups_df)
@@ -211,3 +234,62 @@ view(pups_df)
 ```
 
 ## Oh excel…
+
+Jenny made’readxl’to solve our problems.
+
+``` r
+mlb_df=read_excel("data/mlb11.xlsx")
+```
+
+Look at the data
+
+``` r
+mlb_df
+```
+
+    ## # A tibble: 30 × 12
+    ##    team        runs at_bats  hits homeruns bat_avg strikeouts stolen_bases  wins
+    ##    <chr>      <dbl>   <dbl> <dbl>    <dbl>   <dbl>      <dbl>        <dbl> <dbl>
+    ##  1 Texas Ran…   855    5659  1599      210   0.283        930          143    96
+    ##  2 Boston Re…   875    5710  1600      203   0.28        1108          102    90
+    ##  3 Detroit T…   787    5563  1540      169   0.277       1143           49    95
+    ##  4 Kansas Ci…   730    5672  1560      129   0.275       1006          153    71
+    ##  5 St. Louis…   762    5532  1513      162   0.273        978           57    90
+    ##  6 New York …   718    5600  1477      108   0.264       1085          130    77
+    ##  7 New York …   867    5518  1452      222   0.263       1138          147    97
+    ##  8 Milwaukee…   721    5447  1422      185   0.261       1083           94    96
+    ##  9 Colorado …   735    5544  1429      163   0.258       1201          118    73
+    ## 10 Houston A…   615    5598  1442       95   0.258       1164          118    56
+    ## # ℹ 20 more rows
+    ## # ℹ 3 more variables: new_onbase <dbl>, new_slug <dbl>, new_obs <dbl>
+
+Load some LotR data. Import FOTR words.
+
+``` r
+fotr_df=
+  read_excel("data/LotR_Words.xlsx",
+    range="B3:D6")
+fotr_df
+```
+
+    ## # A tibble: 3 × 3
+    ##   Race   Female  Male
+    ##   <chr>   <dbl> <dbl>
+    ## 1 Elf      1229   971
+    ## 2 Hobbit     14  3644
+    ## 3 Man         0  1995
+
+What about two towers
+
+``` r
+tt_df=read_excel("data/LotR_Words.xlsx",
+    range="F3:H6")
+tt_df
+```
+
+    ## # A tibble: 3 × 3
+    ##   Race   Female  Male
+    ##   <chr>   <dbl> <dbl>
+    ## 1 Elf       331   513
+    ## 2 Hobbit      0  2463
+    ## 3 Man       401  3589
