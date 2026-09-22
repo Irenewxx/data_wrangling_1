@@ -6,10 +6,12 @@ output: github_document
 
 This file is for data import,每次commit和push之前，都要knit檢查！
 readxl package 可用來讀excel
+haven package可用用來讀SAS
 
 ```{r}
 library(tidyverse)
 library(readxl)
+library(haven)
 
 ```
 
@@ -89,11 +91,23 @@ fotr_df
 
 ```
 
-What about two towers
+What about two towers?
 ```{r}
 tt_df=read_excel("data/LotR_Words.xlsx",
     range="F3:H6")
 tt_df
+```
+
+
+## Import SAS file
+Read in the PULSE dataset
+```{r}
+pulse_df=
+  read_sas("data/public_pulse_data.sas7bdat")
+
+pulse_df=janitor::clean_names(pulse_df)
+pulse_df
+
 ```
 
 
