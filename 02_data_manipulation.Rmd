@@ -5,3 +5,178 @@ output: github_document
 
 
 This file is for data manipulation,每次commit和push之前，都要knit檢查！
+```{r}
+library(tidyverse)
+```
+
+load the litters and pups datasets
+```{r}
+litters_df=
+  read_csv(file="data/FAS_litters.csv",
+    na=c("","NA",".")
+  )
+litters_df
+#永遠記得print或者head都是（你最開始的data命名）
+
+litters_df=janitor::clean_names(litters_df)
+
+pups_df=
+  read_csv(file="data/FAS_pups.csv",
+    na=c("","NA",".")
+  )
+pups_df
+#永遠記得print或者head都是（你最開始的data命名）
+
+pups_df=janitor::clean_names(pups_df)
+```
+
+
+
+##select some variables(group did not come out!)
+```{r}
+select(litters_df,group, litter_number)
+select(litters_df,group:gd_of_birth)
+select(litters_df,-group)
+select(litters_df, starts_with("gd"),group)
+
+```
+
+a couple of alternatives
+relocate可以把想改變的順序改變(表格裡面？)
+```{r}
+rename(litters_df,GROUP=group)
+
+relocate(litters_df,litter_number,gd0_weight)
+```
+
+
+In the pups data, select litter number, sex, PD ears(did not show up?)
+```{r}
+select(pups_df,litter_number,sex,pd_ears)
+```
+
+##filter some rows,用2個==來表示問R你的function是否為true
+```{r}
+filter(litters_df,gd_of_birth == 19)
+
+filter(litters_df,pups_born_alive ==5)
+
+filter(litters_df,pups_born_alive !=6)
+
+filter(litters_df,group %in% c("con7","con8"))
+
+filter(litters_df,group %in% c("con7","con8"), pups_bron_alive<7) 
+
+
+drop_na(litters_df,gd0_weight)
+```
+
+
+In the pups dataset, keep only rows where PD walk is less than 11 and sex is 2
+```{r}
+filter(pups_df, pd_walk<11, sex==2)
+#這一行報錯lol
+```
+
+
+## mutate to change some columns
+lets add and change some columns
+可以增加column, 然後你可以把原本的column改成你希望命名的column，然後read and find你mutate的column
+```{r}
+mutate(litters_df, wt_gain = gd18_weight - gd0_weight)
+
+mutate(litters_df,
+   wt_gain = gd18_weight - gd0_weight,
+  wt_gain_squared = wt_gain^2,
+  group=str_to_lower(group))
+```
+
+In the pups dataset, create a variable that substracts7 from PD walk(error?)
+```{r}
+mutate(pups_df, pd_walk_minus7 = pd_walk-7)
+```
+
+
+##arrange the data
+你可以用arrange來重新編排你的表格，比如改成降序或者升序排列，只是改變順序
+```{r}
+arrange(litters_df,pups_born_alive)
+arrange(litters_df,desc(pups_born_alive))
+
+```
+
+
+## Do multiple steps
+這一區塊有點困惑？？？
+This is bad:
+```{r}
+litters_df=
+  read_csv(file="data/FAS_litters.csv",
+    na=c("","NA",".")
+  )
+litters_rename_df=janitor::clean_names(litters_df)
+litters_with_gd_df-select(litters_rename_df,group,starts_with("gd"))
+litters_no_na_df=drop_na(litters_with_gd_df)
+litters_wt_gain_df=mutate(litters_no_na_df,wt_gain = gd18_weight - gd0_weight)
+```
+
+
+This is good:
+平常code的時候請按照這個模式來，讓code好讀而且清楚
+但是這裡報錯了orz（？）
+```{r}
+litters_df=
+   read_csv(file="data/FAS_litters.csv", 
+    na=c("","NA","."))
+janitor::clean_names() |> 
+select(groups,starts_with("gd")) |> 
+drop_na() |> 
+mutate(
+  wt_gain=gd18_weight-gd_0,
+  group=str_to_lower(group)
+)
+```
+
+
+load pups, clean names, drop missing, keep litter number and pd variables, and add pd walk-7
+```{r}
+pups_df=
+  read_csv(file="data/FAS_pups.csv",skip=3,
+    na=c("","NA",".") |> 
+      janitor::clean_names() |> 
+      drop_na() |>
+      select(litter_number,starts_with("pd")) |> 
+      mutate(
+        pd_walk_minus_7=pd_walk-7
+      )
+```
+
+
+select vs pull（error reason?）
+```{r}
+litters_df |> 
+  select(group)
+
+litters_df |> 
+  pull(group)
+```
+
+select永遠會直接給你data frame，如果你用pull，會直接只把columns給提出來，你只會知道有哪些columns
+
+never do $
+```{r}
+litters_df$group
+```
+如果你用這個你很容易忘記你改了哪些，只在data frame裡面用，如果真的要改內容，請用mutate
+這個符號會改變沒錯，但你很容易忘記而且不好track你改變的variable
+
+command+shift+M 可以打出： |> 
+
+pipes and viweing
+```{r}
+litters_df |> 
+  filter(group %in% c("con7","con8"))
+```
+
+
+
