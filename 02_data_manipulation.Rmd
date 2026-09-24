@@ -32,12 +32,21 @@ pups_df=janitor::clean_names(pups_df)
 
 
 
-##select some variables(group did not come out!)
+##select some variables
 ```{r}
-select(litters_df,group, litter_number)
-select(litters_df,group:gd_of_birth)
-select(litters_df,-group)
-select(litters_df, starts_with("gd"),group)
+select(litters_df, group, litter_number)
+
+select(litters_df, group:gd_of_birth)
+
+select(litters_df, -group)
+
+select(litters_df, starts_with("gd"))
+
+select(litters_df, starts_with("gd"), group)
+
+select(litters_df, LITTER = litter_number, everything())
+
+select(litters_df, -starts_with("gd"))
 
 ```
 
