@@ -1,0 +1,204 @@
+---
+title: "tidy data"
+output: github_document
+---
+
+
+This file is for data manipulation,每次commit和push之前，都要knit檢查！
+```{r}
+library(tidyverse)
+```
+
+##Lets tidy some data
+```{r}
+pulse_df=
+  haven::read_sas("data/public_pulse_data.sas7bdat") |> 
+janitor::clean_names()
+
+pulse_df
+```
+
+我們發現：The column names有點混在一起了，需要re-organize
+
+okay,lets tidy
+```{r}
+pulse_tidy_df=
+  pulse_df |> 
+  pivot_longer(
+    bdi_score_bl:bdi_score_12m,
+    names_to="visit",
+    names_prefix="bdi_score_",
+    values_to="bdi_score"
+  ) |> 
+  mutate(
+    visit=replace(visit,visit=="bl","00m")
+  )
+```
+
+
+just use once
+```{r}
+pulse_tidy_df =
+  pulse_df |>
+  pivot_longer(
+    bdi_score_bl:bdi_score_12m,
+    names_to = "visit",
+    names_prefix = "bdi_score_",
+    values_to = "bdi_score"
+  ) |>
+  mutate(
+    visit = replace(
+      visit,
+      visit == "bl",
+      "00m"
+    )
+  )
+
+pulse_tidy_df   
+```
+
+
+Lets practice
+Import the litters data;keep columns litter number and GD weights and tidy.
+```{r}
+litters_tidy_df =
+  read_csv(
+    "data/FAS_litters.csv",
+    na = c(".", "", "NA")
+  ) |>
+  janitor::clean_names() |>
+  select(
+    litter_number,
+    gd0_weight,
+    gd18_weight
+  ) |>
+  pivot_longer(
+    gd0_weight:gd18_weight,
+    names_to = "gd",
+    values_to = "weight"
+  ) |>
+  mutate(
+    gd = case_match(
+      gd,
+      "gd0_weight" ~ 0,
+      "gd18_weight" ~ 18
+    )
+  )
+
+litters_tidy_df
+```
+
+
+
+##deliberately untidy data
+```{r}
+analysis_df=
+  tibble(
+    groups=c("treatment","treatment","placebo","placebo"),
+    time=c("pre","post","pre","post"),
+    mean_outcome=c(4,8,3.5,4.6)
+  )
+analysis_df
+```
+
+
+lets untidy this datset for human
+```{r}
+analysis_df |> 
+  pivot_wider(
+    names_from=time,
+    values_from= mean_outcome
+  ) |> 
+  knitr::kable()
+```
+
+
+##bind some rows
+first, import each LOTR movie table
+```{r}
+fellowship_df=
+  readxl::read_excel("data/LotR_Words.xlsx",range="B3:D6") |> 
+  mutate(movie="fellowship")
+fellowship_df
+
+two_tower_df=
+  readxl::read_excel("data/LotR_Words.xlsx",range="F3:H6") |> 
+  mutate(movie="two towers")
+two_tower_df
+
+return_df=
+  readxl::read_excel("data/LotR_Words.xlsx",range="J3:L6") |> 
+  mutate(movie="return of the king")
+return_df
+```
+
+
+
+Next put all of these together and tidy
+```{r}
+lotr_df=
+  bind_rows(fellowship_df,two_tower_df,return_df) |> 
+  janitor::clean_names() |> 
+  relocate(movie) |> 
+  pivot_longer(
+    female:male,
+    names_to="gender",
+    values_to="words"
+  )
+lotr_df
+```
+
+##join FAS datasets
+
+import both
+
+```{r}
+pups_df=
+  read_csv("data/FAS_pups.csv",
+    skip=3,
+    na=c(".",",","NA")) |> 
+      janitor::clean_names() |> 
+mutate(
+  sex=case_match(
+    sex,
+    1~"male",
+    2~"female"
+  )
+)
+pups_df
+    
+
+litters_df =
+  read_csv(
+    "data/FAS_litters.csv",
+    na = c(".", "", "NA")
+  ) |>
+  janitor::clean_names() |>
+  relocate(litter_number) |>
+  separate(
+    group,
+    into = c("dose", "day_of_tx"),
+    sep = 3
+  ) |>
+  mutate(
+    dose = str_to_lower(dose),
+    day_of_tx = as.numeric(day_of_tx),
+    gd_weight_gain = gd18_weight - gd0_weight
+  )
+
+litters_df
+
+fas_df =
+  left_join(
+    pups_df,
+    litters_df,
+    by = "litter_number"
+  )
+
+fas_df
+
+
+```
+View(fas_df) 要放在console
+
+
